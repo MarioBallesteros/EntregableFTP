@@ -10,15 +10,18 @@ public class LaunchClient {
     public static void main(String[] args) {
         FTPClient client = new FTPClient();
         try {
-            client.connect("192.168.1.45");
+            // Especifica el puerto 2121 en la llamada connect
+            client.connect("192.168.1.45", 2121);
             client.login("anonymous", "password");
 
             client.enterLocalPassiveMode();
             client.setFileType(FTP.BINARY_FILE_TYPE);
 
-            // Subir archivo
-            String remoteFile = "/home/clientessh/prueba.txt";
-            File uploadFile = new File(remoteFile);
+            // Asegúrate de que el archivo que intentas subir existe y la ruta es correcta
+            String localFilePath = "/path/to/local/file.txt"; // Ruta local del archivo a subir
+            String remoteFile = "/home/anonimo"; // Ruta remota donde se subirá el archivo
+
+            File uploadFile = new File(localFilePath);
             try (FileInputStream fis = new FileInputStream(uploadFile)) {
                 boolean result = client.storeFile(remoteFile, fis);
                 System.out.println("Subida realizada con éxito: " + result);
