@@ -14,7 +14,6 @@ public class LaunchServer {
 
         // Configuración del rango de puertos para el modo pasivo
         DataConnectionConfigurationFactory dataConnectionConf = new DataConnectionConfigurationFactory();
-
         listenerFactory.setPort(2121);
         listenerFactory.setDataConnectionConfiguration(dataConnectionConf.createDataConnectionConfiguration());
 
@@ -34,10 +33,24 @@ public class LaunchServer {
         serverFactory.addListener("default", listenerFactory.createListener());
         FtpServer server = serverFactory.createServer();
 
+        // Iniciar el hilo de monitoreo de archivo
+        HiloComprobar fileWatcher = new HiloComprobar("/home/anonimo/prueba.txt");
+        fileWatcher.start();
+
         try {
             server.start();
+            System.out.println("Servidor FTP corriendo. Presione enter para detener...");
+            System.in.read();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            server.stop();
+            fileWatcher.interrupt();
+            try {
+                fileWatcher.join(); // Esperar a que el hilo termine
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
