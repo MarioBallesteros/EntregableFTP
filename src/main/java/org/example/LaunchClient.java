@@ -6,18 +6,18 @@ import org.apache.commons.net.ftp.FTPClient;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 
 public class LaunchClient {
     public static void main(String[] args) {
         FTPClient client = new FTPClient();
         try {
-            // Especifica el puerto 2121 en la llamada connect
-// Conéctate al servidor y autentícate primero
             client.connect("192.168.1.45", 2121);
             client.login("anonymous", "password");
 
-// Intenta cambiar al directorio remoto. Si falla, intenta crearlo.
             String remoteDirPath = "/home/clientessh";
             if (!client.changeWorkingDirectory(remoteDirPath)) {
                 if (client.makeDirectory(remoteDirPath)) {
@@ -25,12 +25,16 @@ public class LaunchClient {
                     client.changeWorkingDirectory(remoteDirPath);
                 } else {
                     System.out.println("Fallo al crear el directorio remoto.");
-                    // Manejar el fallo adecuadamente
                 }
             }
 
+            // Cambiar permisos del archivo local antes de subirlo
+            String localFilePath = "/home/clientessh/prueba.txt";
+            Set<PosixFilePermission> permisos = Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
+            Files.setPosixFilePermissions(Paths.get(localFilePath), permisos);
+
             String remoteFile = "prueba.txt";
-            File uploadFile = new File("/home/clientessh/prueba.txt");
+            File uploadFile = new File(localFilePath);
             try (FileInputStream fis = new FileInputStream(uploadFile)) {
                 boolean result = client.storeFile(remoteFile, fis);
                 System.out.println("Subida realizada con éxito: " + client.getReplyString());
@@ -38,10 +42,15 @@ public class LaunchClient {
                 e.printStackTrace();
             }
 
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                client.logout();
+                client.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
