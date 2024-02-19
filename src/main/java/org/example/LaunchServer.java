@@ -14,7 +14,6 @@ public class LaunchServer {
 
         // Configuración del rango de puertos para el modo pasivo
         DataConnectionConfigurationFactory dataConnectionConf = new DataConnectionConfigurationFactory();
-        dataConnectionConf.setPassivePorts("10000-10500"); // Rango de puertos para conexiones pasivas
 
         listenerFactory.setPort(2121);
         listenerFactory.setDataConnectionConfiguration(dataConnectionConf.createDataConnectionConfiguration());
@@ -23,7 +22,7 @@ public class LaunchServer {
         PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
         BaseUser user = new BaseUser();
         user.setName("anonymous");
-        user.setPassword(""); // La contraseña puede estar vacía para acceso anónimo
+        user.setPassword("");
         user.setHomeDirectory("/home/anonimo");
 
         try {
