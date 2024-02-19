@@ -33,7 +33,7 @@ public class LaunchClient {
             File uploadFile = new File("/home/clientessh/prueba.txt");
             try (FileInputStream fis = new FileInputStream(uploadFile)) {
                 boolean result = client.storeFile(remoteFile, fis);
-                System.out.println("Subida realizada con éxito: " + result);
+                System.out.println("Subida realizada con éxito: " + client.getReplyString());
             } catch (Exception e) {
                 e.printStackTrace();
             }
