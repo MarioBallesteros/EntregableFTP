@@ -10,10 +10,10 @@ public class LaunchClient {
     public static void main(String[] args) {
         FTPClient client = new FTPClient();
         try {
-            client.connect("10.0.2.15", 2121);
+            client.connect("192.168.1.45", 2121);
             client.login("anonymous", "");
 
-            String remoteDirPath = "/home/psp";
+            String remoteDirPath = "/home/clientessh/pruebaa";
             if (!client.changeWorkingDirectory(remoteDirPath)) {
                 if (client.makeDirectory(remoteDirPath)) {
                     System.out.println("Directorio remoto creado con éxito.");
