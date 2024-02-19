@@ -16,6 +16,7 @@ public class LaunchServer {
         DataConnectionConfigurationFactory dataConnectionConf = new DataConnectionConfigurationFactory();
         dataConnectionConf.setPassivePorts("10000-10500"); // Rango de puertos para conexiones pasivas
 
+        listenerFactory.setPort(2121);
         listenerFactory.setDataConnectionConfiguration(dataConnectionConf.createDataConnectionConfiguration());
 
         // Configurar usuario anónimo con acceso a una carpeta específica
