@@ -23,7 +23,7 @@ public class LaunchServer {
         BaseUser user = new BaseUser();
         user.setName("anonymous");
         user.setPassword(""); // La contraseña puede estar vacía para acceso anónimo
-        user.setHomeDirectory("/path/to/anonymous/folder");
+        user.setHomeDirectory("/home/anonimo");
 
         try {
             serverFactory.getUserManager().save(user);
