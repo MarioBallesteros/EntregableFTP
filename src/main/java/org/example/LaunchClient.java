@@ -15,10 +15,10 @@ public class LaunchClient {
     public static void main(String[] args) {
         FTPClient client = new FTPClient();
         try {
-            client.connect("192.168.1.45", 2121);
-            client.login("anonymous", "password");
+            client.connect("10.0.2.15", 2121);
+            client.login("anonymous","anonymous");
 
-            String remoteDirPath = "/home/clientessh";
+            String remoteDirPath = "/home/psp";
             if (!client.changeWorkingDirectory(remoteDirPath)) {
                 if (client.makeDirectory(remoteDirPath)) {
                     System.out.println("Directorio remoto creado con éxito.");
@@ -28,8 +28,7 @@ public class LaunchClient {
                 }
             }
 
-            // Cambiar permisos del archivo local antes de subirlo
-            String localFilePath = "/home/clientessh/prueba.txt";
+            String localFilePath = "/home/mballesterosv/";
             Set<PosixFilePermission> permisos = Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
             Files.setPosixFilePermissions(Paths.get(localFilePath), permisos);
 
