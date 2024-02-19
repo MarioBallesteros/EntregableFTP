@@ -22,7 +22,7 @@ public class LaunchServer {
         BaseUser user = new BaseUser();
         user.setName("anonymous");
         user.setPassword("");
-        user.setHomeDirectory("/home/anonimo");
+        user.setHomeDirectory("/home/clientessh");
 
         try {
             serverFactory.getUserManager().save(user);
@@ -32,15 +32,14 @@ public class LaunchServer {
 
         serverFactory.addListener("default", listenerFactory.createListener());
         FtpServer server = serverFactory.createServer();
-
         // Iniciar el hilo de monitoreo de archivo
-        HiloComprobar fileWatcher = new HiloComprobar("/home/anonimo/prueba.txt");
+        HiloComprobar fileWatcher = new HiloComprobar("/home/clientessh/prueba.txt");
         fileWatcher.start();
 
         try {
             server.start();
             System.out.println("Servidor FTP corriendo. Presione enter para detener...");
-            System.in.read();
+            System.out.println(System.in.read());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
