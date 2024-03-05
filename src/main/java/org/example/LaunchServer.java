@@ -1,63 +1,66 @@
-package org.example;
+import java.io.IOException;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTP;
 
-import org.apache.ftpserver.DataConnectionConfigurationFactory;
-import org.apache.ftpserver.FtpServer;
-import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.ftplet.Authority;
-import org.apache.ftpserver.listener.ListenerFactory;
-import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
-import org.apache.ftpserver.usermanager.impl.BaseUser;
-import org.apache.ftpserver.usermanager.impl.WritePermission;
+public class ListaFicherosFTP {
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class LaunchServer {
     public static void main(String[] args) {
-        FtpServerFactory serverFactory = new FtpServerFactory();
-        ListenerFactory listenerFactory = new ListenerFactory();
 
-        // Configuración del rango de puertos para el modo pasivo
-        DataConnectionConfigurationFactory dataConnectionConf = new DataConnectionConfigurationFactory();
-        listenerFactory.setPort(2121);
-        listenerFactory.setDataConnectionConfiguration(dataConnectionConf.createDataConnectionConfiguration());
-
-        // Configurar usuario anónimo con acceso a una carpeta específica
-        PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
-        BaseUser user = new BaseUser();
-        user.setName("anonymous");
-        user.setPassword("");
-        user.setHomeDirectory("/home/clientessh");
-        // Crear una lista de autoridades (permisos)
-        List<Authority> authorities = new ArrayList<>();
-        authorities.add(new WritePermission());
-        user.setAuthorities(authorities);
-
-        try {
-            serverFactory.getUserManager().save(user);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (args.length < 1) {
+            System.out.println("ERROR: indicar como parámetros:");
+            System.out.println("servidor [usuario] [contraseña]");
+            System.exit(1);
         }
 
-        serverFactory.addListener("default", listenerFactory.createListener());
-        FtpServer server = serverFactory.createServer();
-        // Iniciar el hilo de monitoreo de archivo
-        HiloComprobar fileWatcher = new HiloComprobar("/home/clientessh/prueba.txt");
-        fileWatcher.start();
+        String servidorFTP = args[0];
+        String usuario = args.length >= 2 ? args[1] : "anonymous";
+        String password = args.length >= 3 ? args[2] : "";
+
+        FTPClient clienteFTP = new FTPClient();
 
         try {
-            server.start();
-            System.out.println("Servidor FTP corriendo. Presione enter para detener...");
-            System.out.println(System.in.read());
-        } catch (Exception e) {
+            clienteFTP.connect(servidorFTP);
+            int codResp = clienteFTP.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(codResp)) {
+                System.out.printf("ERROR: Conexión rechazada con código de respuesta %d.\n", codResp);
+                System.exit(2);
+            }
+
+            clienteFTP.enterLocalPassiveMode();
+            clienteFTP.setFileType(FTP.BINARY_FILE_TYPE);
+
+            boolean loginOK = clienteFTP.login(usuario, password);
+            if (!loginOK) {
+                System.out.printf("ERROR: Login con usuario %s rechazado.\n", usuario);
+                return;
+            }
+
+            System.out.printf("INFO: Conexión establecida. Mensaje de bienvenida del servidor:\n====\n%s\n====\n", clienteFTP.getReplyString());
+            System.out.printf("INFO: Directorio actual en servidor: %s. Contenidos:\n", clienteFTP.printWorkingDirectory());
+
+            FTPFile[] fichServ = clienteFTP.listFiles();
+            for (FTPFile f : fichServ) {
+                String infoAdicFich = "";
+                if (f.getType() == FTPFile.DIRECTORY_TYPE) {
+                    infoAdicFich = "/";
+                } else if (f.getType() == FTPFile.SYMBOLIC_LINK_TYPE) {
+                    infoAdicFich = " -> " + f.getLink();
+                }
+                System.out.printf("%s%s\n", f.getName(), infoAdicFich);
+            }
+        } catch (IOException e) {
+            System.out.println("ERROR: conectando al servidor");
             e.printStackTrace();
         } finally {
-            server.stop();
-            fileWatcher.interrupt();
-            try {
-                fileWatcher.join(); // Esperar a que el hilo termine
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (clienteFTP.isConnected()) {
+                try {
+                    clienteFTP.disconnect();
+                    System.out.println("INFO: conexión cerrada.");
+                } catch (IOException e) {
+                    System.out.println("AVISO: no se pudo cerrar la conexión.");
+                }
             }
         }
     }
