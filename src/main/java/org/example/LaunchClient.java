@@ -9,21 +9,15 @@ import org.apache.commons.net.ftp.FTP;
 public class LaunchClient {
 
     public static void main(String[] args) {
-
-        if (args.length < 1) {
-            System.out.println("ERROR: indicar como parámetros:");
-            System.out.println("servidor [usuario] [contraseña]");
-            System.exit(1);
-        }
-
-        String servidorFTP = args[0];
-        String usuario = args.length >= 2 ? args[1] : "anonymous";
-        String password = args.length >= 3 ? args[2] : "";
+        String servidorFTP = "10.0.2.15"; // Asume que este es el servidor FTP en tu máquina virtual
+        String usuario = "anonymous";
+        String password = "";
 
         FTPClient clienteFTP = new FTPClient();
 
         try {
-            clienteFTP.connect(servidorFTP);
+            // Conectar al servidor FTP especificando el puerto
+            clienteFTP.connect(servidorFTP, 2221); // Aquí se especifica el puerto 2221
             int codResp = clienteFTP.getReplyCode();
             if (!FTPReply.isPositiveCompletion(codResp)) {
                 System.out.printf("ERROR: Conexión rechazada con código de respuesta %d.\n", codResp);

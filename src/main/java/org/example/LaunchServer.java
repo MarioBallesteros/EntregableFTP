@@ -11,7 +11,6 @@ import org.apache.ftpserver.ftplet.Authority;
 import java.util.Arrays;
 
 public class LaunchServer {
-asd
     public static void main(String[] args) {
         FtpServerFactory serverFactory = new FtpServerFactory();
         ListenerFactory listenerFactory = new ListenerFactory();
