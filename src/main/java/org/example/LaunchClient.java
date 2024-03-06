@@ -9,7 +9,7 @@ import org.apache.commons.net.ftp.FTP;
 public class LaunchClient {
 
     public static void main(String[] args) {
-        String servidorFTP = "10.0.2.15"; // Asume que este es el servidor FTP en tu máquina virtual
+        String servidorFTP = "10.18.0.174"; // Asume que este es el servidor FTP en tu máquina virtual
         String usuario = "anonymous";
         String password = "";
 
