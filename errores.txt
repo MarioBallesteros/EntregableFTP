@@ -1,13 +1,18 @@
-java.net.ConnectException: Conexión rehusada
-	at java.base/sun.nio.ch.Net.connect0(Native Method)
-	at java.base/sun.nio.ch.Net.connect(Net.java:579)
-	at java.base/sun.nio.ch.Net.connect(Net.java:568)
-	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:576)
-	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
-	at java.base/java.net.Socket.connect(Socket.java:666)
-	at org.apache.commons.net.SocketClient._connect(SocketClient.java:243)
-	at org.apache.commons.net.SocketClient.connect(SocketClient.java:202)
-	at org.apache.commons.net.SocketClient.connect(SocketClient.java:306)
-	at org.example.LaunchClient.main(LaunchClient.java:13)
+psp@psp-VirtualBox:~$ ifconfig
+enp0s3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.0.2.15  netmask 255.255.255.0  broadcast 10.0.2.255
+        inet6 fe80::5adc:dbf2:af87:3e45  prefixlen 64  scopeid 0x20<link>
+        ether 08:00:27:b5:eb:4b  txqueuelen 1000  (Ethernet)
+        RX packets 1201  bytes 1264834 (1.2 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 764  bytes 81348 (81.3 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-Process finished with exit code 0
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Bucle local)
+        RX packets 18503  bytes 1397385 (1.3 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 18503  bytes 1397385 (1.3 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0

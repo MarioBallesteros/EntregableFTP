@@ -29,12 +29,11 @@ public class LaunchServer {
         PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
         BaseUser user = new BaseUser();
         user.setName("anonymous");
-        user.setPassword("password"); // Por simplicidad, pero en un entorno real, se debería manejar de forma segura.
-        user.setHomeDirectory("/path/to/anonymous/folder"); // Ruta al directorio para el usuario anónimo
+        user.setPassword(""); // Por simplicidad, pero en un entorno real, se debería manejar de forma segura.
+        user.setHomeDirectory("/home/psp/anonimos"); // Ruta al directorio para el usuario anónimo
 
         Authority writePermission = new WritePermission();
         user.setAuthorities(Arrays.asList(writePermission));
-
         try {
             userManagerFactory.createUserManager().save(user);
         } catch (Exception e) {
