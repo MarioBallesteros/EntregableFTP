@@ -1,14 +1,17 @@
 package org.example;
 
-import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
+import org.apache.ftpserver.ftplet.*;
 import org.apache.ftpserver.listener.ListenerFactory;
+import org.apache.ftpserver.usermanager.PasswordEncryptor;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
 import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
-import org.apache.ftpserver.ftplet.Authority;
-import java.util.Arrays;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LaunchServer {
     public static void main(String[] args) {
@@ -17,38 +20,47 @@ public class LaunchServer {
 
         // Configurar el puerto, por ejemplo 2221
         listenerFactory.setPort(2221);
-
-        // Configurar el modo pasivo
-        DataConnectionConfigurationFactory dataConnectionConf = new DataConnectionConfigurationFactory();
-        dataConnectionConf.setPassivePorts("10000-11000"); // Rango de puertos para el modo pasivo
-        listenerFactory.setDataConnectionConfiguration(dataConnectionConf.createDataConnectionConfiguration());
-
         serverFactory.addListener("default", listenerFactory.createListener());
 
-        // Configuración para permitir el acceso anónimo
         PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
+        userManagerFactory.setFile(new File("myusers.properties")); // Path to user properties
+        userManagerFactory.setPasswordEncryptor(new PasswordEncryptor() {
+            @Override
+            public String encrypt(String password) {
+                return password; // In a real scenario, use a secure encryptor
+            }
+            @Override
+            public boolean matches(String passwordToCheck, String storedPassword) {
+                return passwordToCheck.equals(storedPassword);
+            }
+        });
+
         BaseUser user = new BaseUser();
         user.setName("anonymous");
-        user.setPassword(""); // Por simplicidad, pero en un entorno real, se debería manejar de forma segura.
-        user.setHomeDirectory("/home/psp/anonimos"); // Ruta al directorio para el usuario anónimo
+        user.setPassword("");
+        user.setHomeDirectory("/home/psp/anonimos");
 
-        Authority writePermission = new WritePermission();
-        user.setAuthorities(Arrays.asList(writePermission));
+        List<Authority> authorities = new ArrayList<>();
+        authorities.add(new WritePermission()); // Adding write permission
+        user.setAuthorities(authorities);
+
         try {
-            userManagerFactory.createUserManager().save(user);
-        } catch (Exception e) {
-            System.err.println("Error al crear el usuario: " + e.getMessage());
+            UserManager um = userManagerFactory.createUserManager();
+            um.save(user); // Save the user
+            serverFactory.setUserManager(um);
+        } catch (FtpException e) {
+            System.err.println("Error saving user: " + e.getMessage());
         }
 
-        serverFactory.setUserManager(userManagerFactory.createUserManager());
+        // Ftplet configuration is omitted for brevity
+        // Additional Ftplet setup would go here
 
-        // Iniciar el servidor
         FtpServer server = serverFactory.createServer();
         try {
             server.start();
-            System.out.println("Servidor FTP iniciado correctamente en el puerto 2221.");
-        } catch (Exception e) {
-            System.err.println("Error al iniciar el servidor FTP: " + e.getMessage());
+            System.out.println("FTP Server started on port 2221.");
+        } catch (FtpException e) {
+            System.err.println("Error starting FTP server: " + e.getMessage());
         }
     }
 }
