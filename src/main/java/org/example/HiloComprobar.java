@@ -49,7 +49,7 @@ public class HiloComprobar extends Thread {
                                 userManager.save(newUser);
                                 guardarUsuarioEnFichero(userName);
                             }
-                            // El archivo se elimina después de leer el usuario y la contraseña.
+                            // borrar archivo
                             Files.delete(file.toPath());
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -59,7 +59,7 @@ public class HiloComprobar extends Thread {
             }
 
             try {
-                Thread.sleep(5000); // Esperar 5 segundos antes de la próxima comprobación.
+                Thread.sleep(10000); // esperar 10 segundos
             } catch (InterruptedException e) {
                 this.interrupt();
             }

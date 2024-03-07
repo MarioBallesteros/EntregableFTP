@@ -9,23 +9,22 @@ import org.apache.commons.net.ftp.FTPClient;
 public class LaunchClient {
 
     public static void main(String[] args) {
-        String servidorFTP = "192.168.1.65"; // Cambiar por la IP del servidor
+        String servidorFTP = "192.168.1.65";
         FTPClient clienteFTP = new FTPClient();
 
         try {
             clienteFTP.connect(servidorFTP, 2221);
-            clienteFTP.login("anonymous", ""); // O tus credenciales si es necesario
+            clienteFTP.login("anonymous", "");
             clienteFTP.enterLocalPassiveMode();
             clienteFTP.setFileType(FTPClient.BINARY_FILE_TYPE);
 
-            // Crear un archivo .txt de ejemplo
             File archivoLocal = new File("usuario.txt");
 
             // Subir el archivo al servidor
             String archivoDestino = "/nuevosUsuarios/usuario.txt";
             try (FileInputStream fis = new FileInputStream(archivoLocal)) {
                 clienteFTP.storeFile(archivoDestino, fis);
-                System.out.println("Archivo subido exitosamente.");
+                System.out.println("Archivo subido");
             }
 
         } catch (IOException e) {

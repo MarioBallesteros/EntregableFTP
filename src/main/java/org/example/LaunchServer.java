@@ -18,7 +18,6 @@ public class LaunchServer {
         FtpServerFactory serverFactory = new FtpServerFactory();
         ListenerFactory listenerFactory = new ListenerFactory();
 
-        // Configurar el puerto, por ejemplo 2221
         listenerFactory.setPort(2221);
         serverFactory.addListener("default", listenerFactory.createListener());
 
@@ -27,7 +26,7 @@ public class LaunchServer {
         userManagerFactory.setPasswordEncryptor(new PasswordEncryptor() {
             @Override
             public String encrypt(String password) {
-                return password; // In a real scenario, use a secure encryptor
+                return password;
             }
             @Override
             public boolean matches(String passwordToCheck, String storedPassword) {
@@ -41,12 +40,12 @@ public class LaunchServer {
         user.setHomeDirectory("/home/psp/anonimos");
 
         List<Authority> authorities = new ArrayList<>();
-        authorities.add(new WritePermission()); // Adding write permission
+        authorities.add(new WritePermission());
         user.setAuthorities(authorities);
 
         try {
             UserManager um = userManagerFactory.createUserManager();
-            um.save(user); // Save the user
+            um.save(user);
             serverFactory.setUserManager(um);
             FtpServer server = serverFactory.createServer();
             HiloComprobar hiloComprobar = new HiloComprobar("/home/psp/anonimos/nuevosUsuarios",um);
