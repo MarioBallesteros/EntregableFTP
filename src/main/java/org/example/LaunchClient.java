@@ -1,60 +1,42 @@
 package org.example;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTP;
 
 public class LaunchClient {
 
     public static void main(String[] args) {
-        String servidorFTP = "192.168.1.65"; // Asume que este es el servidor FTP en tu máquina virtual
-        String usuario = "anonymous";
-        String password = "";
-
+        String servidorFTP = "10.18.0.174"; // Cambiar por la IP del servidor
         FTPClient clienteFTP = new FTPClient();
 
         try {
-            clienteFTP.connect(servidorFTP, 2221); // Aquí se especifica el puerto 2221
-            int codResp = clienteFTP.getReplyCode();
-            if (!FTPReply.isPositiveCompletion(codResp)) {
-                System.out.printf("ERROR: Conexión rechazada con código de respuesta %d.\n", codResp);
-                System.exit(2);
-            }
-
+            clienteFTP.connect(servidorFTP, 2221);
+            clienteFTP.login("anonymous", ""); // O tus credenciales si es necesario
             clienteFTP.enterLocalPassiveMode();
-            clienteFTP.setFileType(FTP.BINARY_FILE_TYPE);
+            clienteFTP.setFileType(FTPClient.BINARY_FILE_TYPE);
 
-            boolean loginOK = clienteFTP.login(usuario, password);
-            if (!loginOK) {
-                System.out.printf("ERROR: Login con usuario %s rechazado.\n", usuario);
-                return;
+            // Crear un archivo .txt de ejemplo
+            File archivoLocal = new File("usuario.txt");
+
+            // Subir el archivo al servidor
+            String archivoDestino = "/nuevosUsuarios/usuario.txt";
+            try (FileInputStream fis = new FileInputStream(archivoLocal)) {
+                clienteFTP.storeFile(archivoDestino, fis);
+                System.out.println("Archivo subido exitosamente.");
             }
 
-            System.out.printf("INFO: Conexión establecida. Mensaje de bienvenida del servidor:\n====\n%s\n====\n", clienteFTP.getReplyString());
-            System.out.printf("INFO: Directorio actual en servidor: %s. Contenidos:\n", clienteFTP.printWorkingDirectory());
-
-            FTPFile[] fichServ = clienteFTP.listFiles();
-            for (FTPFile f : fichServ) {
-                String infoAdicFich = "";
-                if (f.getType() == FTPFile.DIRECTORY_TYPE) {
-                    infoAdicFich = "/";
-                } else if (f.getType() == FTPFile.SYMBOLIC_LINK_TYPE) {
-                    infoAdicFich = " -> " + f.getLink();
-                }
-                System.out.printf("%s%s\n", f.getName(), infoAdicFich);
-            }
         } catch (IOException e) {
-            System.out.println("ERROR: conectando al servidor");
             e.printStackTrace();
         } finally {
             if (clienteFTP.isConnected()) {
                 try {
+                    clienteFTP.logout();
                     clienteFTP.disconnect();
-                    System.out.println("INFO: conexión cerrada.");
-                } catch (IOException e) {
-                    System.out.println("AVISO: no se pudo cerrar la conexión.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
