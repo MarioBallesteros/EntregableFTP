@@ -9,14 +9,13 @@ import org.apache.commons.net.ftp.FTP;
 public class LaunchClient {
 
     public static void main(String[] args) {
-        String servidorFTP = "10.18.0.174"; // Asume que este es el servidor FTP en tu máquina virtual
+        String servidorFTP = "192.168.1.65"; // Asume que este es el servidor FTP en tu máquina virtual
         String usuario = "anonymous";
         String password = "";
 
         FTPClient clienteFTP = new FTPClient();
 
         try {
-            // Conectar al servidor FTP especificando el puerto
             clienteFTP.connect(servidorFTP, 2221); // Aquí se especifica el puerto 2221
             int codResp = clienteFTP.getReplyCode();
             if (!FTPReply.isPositiveCompletion(codResp)) {
