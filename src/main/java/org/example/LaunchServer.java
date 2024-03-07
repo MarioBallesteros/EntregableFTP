@@ -48,19 +48,13 @@ public class LaunchServer {
             UserManager um = userManagerFactory.createUserManager();
             um.save(user); // Save the user
             serverFactory.setUserManager(um);
-        } catch (FtpException e) {
-            System.err.println("Error saving user: " + e.getMessage());
-        }
-
-        // Ftplet configuration is omitted for brevity
-        // Additional Ftplet setup would go here
-
-        FtpServer server = serverFactory.createServer();
-        try {
+            FtpServer server = serverFactory.createServer();
+            HiloComprobar hiloComprobar = new HiloComprobar("/home/psp/anonimos/nuevosUsuarios",um);
+            hiloComprobar.start();
             server.start();
             System.out.println("FTP Server started on port 2221.");
         } catch (FtpException e) {
-            System.err.println("Error starting FTP server: " + e.getMessage());
+            System.err.println("Error saving user: " + e.getMessage());
         }
     }
 }
