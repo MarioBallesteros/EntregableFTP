@@ -9,7 +9,7 @@ import org.apache.commons.net.ftp.FTPClient;
 public class LaunchClient {
 
     public static void main(String[] args) {
-        String servidorFTP = "10.18.0.174"; // Cambiar por la IP del servidor
+        String servidorFTP = "192.168.1.65"; // Cambiar por la IP del servidor
         FTPClient clienteFTP = new FTPClient();
 
         try {
